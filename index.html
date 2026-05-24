@@ -1,0 +1,675 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.app{padding:1rem 0 2rem;}
+.nav{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);}
+.nav-btn{background:none;border:none;padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;border-radius:0;display:flex;align-items:center;gap:5px;}
+.nav-btn.active{color:var(--color-text-primary);border-bottom-color:#534AB7;}
+.nav-btn:hover:not(.active){color:var(--color-text-primary);}
+.view{display:none;}.view.active{display:block;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1.2rem;}
+.metric-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;}
+.metric-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;}
+.metric-val{font-size:20px;font-weight:500;color:var(--color-text-primary);}
+.metric-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:1px;}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:10px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.tag-ig{background:#EEEDFE;color:#3C3489;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;}
+.tag-fb{background:#E6F1FB;color:#0C447C;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;}
+input[type=text],input[type=number],select{width:100%;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-row{display:flex;flex-direction:column;gap:4px;}
+.form-label{font-size:12px;color:var(--color-text-secondary);}
+.form-hint{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;}
+.btn-primary{background:#534AB7;color:#EEEDFE;border:none;padding:7px 16px;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;}
+.btn-primary:hover{background:#3C3489;}
+.btn-sm{background:none;border:0.5px solid var(--color-border-secondary);padding:4px 9px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;color:var(--color-text-secondary);}
+.btn-sm:hover{background:var(--color-background-secondary);color:var(--color-text-primary);}
+.btn-nav{background:none;border:0.5px solid var(--color-border-secondary);padding:4px 10px;border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;color:var(--color-text-secondary);}
+.btn-nav:hover{background:var(--color-background-secondary);}
+.btn-danger{background:none;border:0.5px solid var(--color-border-secondary);color:#A32D2D;padding:5px 10px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;}
+.btn-danger:hover{background:#FCEBEB;}
+.table-wrap{overflow-x:auto;}
+table.dt{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+table.dt th{text-align:left;padding:7px 8px;font-size:10px;font-weight:500;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);text-transform:uppercase;letter-spacing:0.04em;}
+table.dt td{padding:7px 8px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+table.dt tr:last-child td{border-bottom:none;}
+table.dt tr:hover td{background:var(--color-background-secondary);}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;}
+.ch-ig{background:#EEEDFE;color:#3C3489;}.ch-fb{background:#E6F1FB;color:#0C447C;}
+.s-bozza{background:#F1EFE8;color:#444441;}.s-da-prog{background:#FAEEDA;color:#633806;}
+.s-prog{background:#EF9F27;color:#412402;}.s-pub{background:#EAF3DE;color:#27500A;}
+.s-spon{background:#3B6D11;color:#C0DD97;}.s-no-pub{background:#FCEBEB;color:#791F1F;}
+.sigla-badge{display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;padding:2px 6px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);font-family:var(--font-mono);letter-spacing:0.04em;}
+.post-id-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:500;padding:2px 7px;border-radius:var(--border-radius-md);background:#EEEDFE;color:#3C3489;font-family:var(--font-mono);letter-spacing:0.03em;white-space:nowrap;}
+.spon-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#EF9F27;border:0.5px solid #BA7517;}
+.spon-dot.off{background:var(--color-background-secondary);border-color:var(--color-border-secondary);}
+.budget-val{font-family:var(--font-mono);font-size:11px;color:#633806;}
+.chart-bar-wrap{display:flex;flex-direction:column;gap:5px;}
+.chart-bar-row{display:flex;align-items:center;gap:6px;font-size:11px;}
+.chart-bar-label{width:80px;color:var(--color-text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;}
+.chart-bar-track{flex:1;height:7px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden;}
+.chart-bar-fill{height:100%;border-radius:4px;}
+.chart-bar-val{width:36px;text-align:right;color:var(--color-text-primary);font-weight:500;flex-shrink:0;font-size:11px;}
+.modal-bg{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.3);border-radius:var(--border-radius-lg);align-items:flex-start;justify-content:center;padding-top:1.2rem;z-index:10;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-secondary);padding:18px;width:100%;max-width:520px;}
+.modal-title{font-size:14px;font-weight:500;margin-bottom:14px;color:var(--color-text-primary);}
+.relative{position:relative;min-height:520px;}
+.filter-bar{display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;}
+.legend-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;align-items:center;}
+.error-msg{font-size:11px;color:#A32D2D;margin-top:3px;display:none;}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:12px 0;}
+.check-row{display:flex;align-items:center;gap:10px;}
+.check-label{font-size:12px;color:var(--color-text-secondary);}
+.cal-grid-table{width:100%;border-collapse:collapse;table-layout:fixed;}
+.cal-dow-row th{padding:5px 3px;font-size:10px;font-weight:500;color:var(--color-text-secondary);text-align:center;text-transform:uppercase;letter-spacing:0.05em;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);}
+.cal-dow-row th.we{color:var(--color-text-tertiary);}
+.cal-cell{vertical-align:top;padding:3px 2px;border:0.5px solid var(--color-border-tertiary);}
+.cal-cell.other{background:var(--color-background-secondary);}
+.cal-cell.today{background:#EEEDFE;}
+.cal-cell.we{background:var(--color-background-secondary);}
+.cal-cell.today.we{background:#EEEDFE;}
+.cal-day-num{font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-align:right;padding:0 2px 2px;line-height:1;}
+.cal-cell.today .cal-day-num{color:#534AB7;}
+.cal-cell.other .cal-day-num{opacity:0.4;}
+.cal-evt{font-size:9px;font-weight:500;padding:2px 3px;border-radius:2px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+.cal-more{font-size:9px;color:var(--color-text-tertiary);padding:1px 3px;}
+.cal-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.cal-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center;}
+</style>
+
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;">Social media tracker — scheda post con ID, sponsorizzazione e budget</h2>
+
+<div class="app">
+<div class="nav">
+  <button class="nav-btn active" onclick="showView('panoramica',this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> Panoramica</button>
+  <button class="nav-btn" onclick="showView('calendario',this)"><i class="ti ti-calendar" aria-hidden="true"></i> Calendario</button>
+  <button class="nav-btn" onclick="showView('clienti',this)"><i class="ti ti-users" aria-hidden="true"></i> Clienti</button>
+  <button class="nav-btn" onclick="showView('post',this)"><i class="ti ti-file-text" aria-hidden="true"></i> Post</button>
+  <button class="nav-btn" onclick="showView('analytics',this)"><i class="ti ti-chart-bar" aria-hidden="true"></i> Analytics</button>
+</div>
+
+<div id="v-panoramica" class="view active">
+  <div class="metric-grid" id="dash-metrics"></div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Stato pubblicazioni</span></div>
+    <div id="dash-stati" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+    <div class="card" style="margin-bottom:0;"><div class="card-header"><span class="card-title"><i class="ti ti-brand-instagram" aria-hidden="true"></i> Top Instagram</span><span class="tag-ig">eng.</span></div><div id="dash-ig-top" class="chart-bar-wrap"></div></div>
+    <div class="card" style="margin-bottom:0;"><div class="card-header"><span class="card-title"><i class="ti ti-brand-facebook" aria-hidden="true"></i> Top Facebook</span><span class="tag-fb">reach</span></div><div id="dash-fb-top" class="chart-bar-wrap"></div></div>
+  </div>
+  <div class="card">
+    <div class="cal-controls">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button class="btn-nav" onclick="calMove(-1,'pan')" aria-label="Mese precedente"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>
+        <span id="cal-title-pan" style="font-size:13px;font-weight:500;color:var(--color-text-primary);min-width:130px;text-align:center;"></span>
+        <button class="btn-nav" onclick="calMove(1,'pan')" aria-label="Mese successivo"><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+        <button class="btn-nav" onclick="calGoToday('pan')" style="font-size:11px;">Oggi</button>
+      </div>
+      <div style="display:flex;gap:5px;">
+        <select id="pan-filter-cliente" style="width:auto;font-size:11px;" onchange="renderCal('pan')"><option value="">Tutti</option></select>
+        <select id="pan-filter-canale" style="width:auto;font-size:11px;" onchange="renderCal('pan')"><option value="">IG+FB</option><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select>
+      </div>
+    </div>
+    <table class="cal-grid-table" id="cal-table-pan"></table>
+    <div class="cal-legend" id="cal-legend-pan"></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Post recenti</span></div>
+    <div class="table-wrap"><table class="dt">
+      <thead><tr><th style="width:11%">Post</th><th style="width:11%">Cliente</th><th style="width:10%">Canale</th><th style="width:25%">Topic</th><th style="width:11%">Reach</th><th style="width:8%">Eng.%</th><th style="width:8%">Ads</th><th style="width:16%">Stato</th></tr></thead>
+      <tbody id="dash-recent"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<div id="v-calendario" class="view">
+  <div class="card">
+    <div class="cal-controls">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button class="btn-nav" onclick="calMove(-1,'full')" aria-label="Mese precedente"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>
+        <span id="cal-title-full" style="font-size:15px;font-weight:500;color:var(--color-text-primary);min-width:160px;text-align:center;"></span>
+        <button class="btn-nav" onclick="calMove(1,'full')" aria-label="Mese successivo"><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+        <button class="btn-nav" onclick="calGoToday('full')" style="font-size:12px;">Oggi</button>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <select id="full-filter-cliente" style="width:auto;font-size:12px;" onchange="renderCal('full')"><option value="">Tutti i clienti</option></select>
+        <select id="full-filter-canale" style="width:auto;font-size:12px;" onchange="renderCal('full')"><option value="">Tutti i canali</option><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select>
+      </div>
+    </div>
+    <table class="cal-grid-table" id="cal-table-full"></table>
+    <div class="cal-legend" id="cal-legend-full"></div>
+  </div>
+</div>
+
+<div id="v-clienti" class="view relative">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+    <button class="btn-primary" onclick="openModal('modal-cliente')"><i class="ti ti-plus" aria-hidden="true"></i> Nuovo cliente</button>
+  </div>
+  <div id="clienti-list"></div>
+  <div class="modal-bg" id="modal-cliente">
+    <div class="modal">
+      <div class="modal-title" id="modal-cliente-title">Nuovo cliente</div>
+      <div class="form-grid" style="margin-bottom:10px;">
+        <div class="form-row"><label class="form-label">Nome / Azienda</label><input type="text" id="c-nome" placeholder="es. Pizzeria Roma" oninput="autoSigla()"></div>
+        <div class="form-row"><label class="form-label">Sigla univoca</label><input type="text" id="c-sigla" placeholder="es. PZR" oninput="validateSigla(this)" style="text-transform:uppercase;" maxlength="6"><span class="form-hint">2–6 caratteri</span><span class="error-msg" id="sigla-error">Sigla già in uso</span></div>
+        <div class="form-row"><label class="form-label">Settore</label><input type="text" id="c-settore" placeholder="es. Ristorazione"></div>
+        <div class="form-row"><label class="form-label">Referente</label><input type="text" id="c-referente" placeholder="Nome cognome"></div>
+        <div class="form-row" style="grid-column:1/-1"><label class="form-label">Email</label><input type="text" id="c-email" placeholder="email@esempio.it"></div>
+      </div>
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin:10px 0 7px;">Instagram</div>
+      <div class="form-grid" style="margin-bottom:8px;">
+        <div class="form-row"><label class="form-label">Username</label><input type="text" id="c-ig-user" placeholder="@handle"></div>
+        <div class="form-row"><label class="form-label">Follower</label><input type="number" id="c-ig-fol" placeholder="0"></div>
+      </div>
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin:10px 0 7px;">Facebook</div>
+      <div class="form-grid" style="margin-bottom:14px;">
+        <div class="form-row"><label class="form-label">Pagina</label><input type="text" id="c-fb-pag" placeholder="Nome pagina"></div>
+        <div class="form-row"><label class="form-label">Fan</label><input type="number" id="c-fb-fan" placeholder="0"></div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn-danger" onclick="closeModal('modal-cliente');editingClienteId=null;">Annulla</button>
+        <button class="btn-primary" onclick="saveCliente()">Salva</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="v-post" class="view relative">
+  <div class="filter-bar">
+    <select id="filter-canale" style="width:auto;" onchange="renderPost()"><option value="">Tutti i canali</option><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select>
+    <select id="filter-cliente" style="width:auto;" onchange="renderPost()"><option value="">Tutti i clienti</option></select>
+    <select id="filter-stato" style="width:auto;" onchange="renderPost()">
+      <option value="">Tutti gli stati</option><option>Bozza</option><option>Da Programmare</option><option>Programmato</option><option>Pubblicato</option><option>Sponsorizzato</option><option>Non Pubblicato</option>
+    </select>
+    <select id="filter-spon" style="width:auto;" onchange="renderPost()"><option value="">Tutti</option><option value="1">Solo sponsorizzati</option><option value="0">Solo organici</option></select>
+    <button class="btn-primary" style="margin-left:auto;" onclick="openModal('modal-post')"><i class="ti ti-plus" aria-hidden="true"></i> Nuovo post</button>
+  </div>
+  <div class="legend-row">
+    <span style="font-size:10px;color:var(--color-text-tertiary);margin-right:3px;">Stato:</span>
+    <span class="pill s-bozza"><i class="ti ti-pencil" aria-hidden="true"></i> Bozza</span>
+    <span class="pill s-da-prog"><i class="ti ti-clock" aria-hidden="true"></i> Da Programmare</span>
+    <span class="pill s-prog"><i class="ti ti-calendar-event" aria-hidden="true"></i> Programmato</span>
+    <span class="pill s-pub"><i class="ti ti-check" aria-hidden="true"></i> Pubblicato</span>
+    <span class="pill s-spon"><i class="ti ti-speakerphone" aria-hidden="true"></i> Sponsorizzato</span>
+    <span class="pill s-no-pub"><i class="ti ti-ban" aria-hidden="true"></i> Non Pubblicato</span>
+  </div>
+  <div class="card">
+    <div class="table-wrap"><table class="dt">
+      <thead><tr>
+        <th style="width:10%">Post</th>
+        <th style="width:9%">Cliente</th>
+        <th style="width:9%">Canale</th>
+        <th style="width:8%">Data</th>
+        <th style="width:8%">Tipo</th>
+        <th style="width:17%">Topic</th>
+        <th style="width:8%">Reach</th>
+        <th style="width:6%">Eng.%</th>
+        <th style="width:5%">Ads</th>
+        <th style="width:8%">Budget</th>
+        <th style="width:12%">Stato</th>
+        <th style="width:6%"></th>
+      </tr></thead>
+      <tbody id="post-table"></tbody>
+    </table></div>
+  </div>
+
+  <div class="modal-bg" id="modal-post">
+    <div class="modal">
+      <div class="modal-title" id="modal-post-title">Nuovo post</div>
+
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px;">Identificativo</div>
+      <div class="form-grid" style="margin-bottom:4px;">
+        <div class="form-row">
+          <label class="form-label">Cliente</label>
+          <select id="p-cliente" onchange="aggiornaPrefisso()"></select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Numero post</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span id="p-prefisso" style="font-size:12px;font-weight:500;color:#3C3489;font-family:var(--font-mono);white-space:nowrap;min-width:36px;"></span>
+            <input type="number" id="p-num" placeholder="001" min="1" style="flex:1;" oninput="aggiornaPrefisso()">
+          </div>
+          <span class="form-hint">Es: PZR-001 · puoi impostarlo liberamente</span>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div id="p-id-preview" style="font-size:11px;color:var(--color-text-tertiary);"></div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px;">Dettagli post</div>
+      <div class="form-grid" style="margin-bottom:10px;">
+        <div class="form-row"><label class="form-label">Canale</label><select id="p-canale" onchange="toggleFbFields()"><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select></div>
+        <div class="form-row"><label class="form-label">Data</label><input type="text" id="p-data" placeholder="YYYY-MM-DD"></div>
+        <div class="form-row"><label class="form-label">Tipo</label><select id="p-tipo"><option>foto</option><option>video</option><option>reel</option><option>carosello</option><option>story</option><option>link</option><option>testo</option><option>evento</option></select></div>
+        <div class="form-row"><label class="form-label">Stato</label><select id="p-stato"><option>Bozza</option><option>Da Programmare</option><option>Programmato</option><option>Pubblicato</option><option>Sponsorizzato</option><option>Non Pubblicato</option></select></div>
+        <div class="form-row" style="grid-column:1/-1"><label class="form-label">Topic</label><input type="text" id="p-topic" placeholder="Tema o descrizione del post"></div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px;">Sponsorizzazione</div>
+      <div class="form-grid" style="margin-bottom:10px;">
+        <div class="form-row">
+          <label class="form-label">Sponsorizzato</label>
+          <div class="check-row" style="margin-top:6px;">
+            <input type="checkbox" id="p-spon" style="width:auto;" onchange="toggleBudget()">
+            <label for="p-spon" class="check-label">Post a pagamento</label>
+          </div>
+        </div>
+        <div class="form-row" id="budget-row">
+          <label class="form-label">Budget (€)</label>
+          <input type="number" id="p-budget" placeholder="0.00" step="0.01" min="0">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px;">Metriche</div>
+      <div class="form-grid" id="ig-fields" style="margin-bottom:4px;">
+        <div class="form-row"><label class="form-label">Reach</label><input type="number" id="p-reach" placeholder="0"></div>
+        <div class="form-row"><label class="form-label">Like</label><input type="number" id="p-like" placeholder="0"></div>
+        <div class="form-row"><label class="form-label">Commenti</label><input type="number" id="p-comm" placeholder="0"></div>
+        <div class="form-row"><label class="form-label">Salvataggi</label><input type="number" id="p-salv" placeholder="0"></div>
+      </div>
+      <div class="form-grid" id="fb-fields" style="margin-bottom:4px;display:none;">
+        <div class="form-row"><label class="form-label">Reach organico</label><input type="number" id="p-reach-org" placeholder="0"></div>
+        <div class="form-row"><label class="form-label">Reach totale</label><input type="number" id="p-reach-tot" placeholder="0"></div>
+        <div class="form-row"><label class="form-label">Condivisioni</label><input type="number" id="p-share" placeholder="0"></div>
+        <div class="form-row"><label class="form-label">Click su link</label><input type="number" id="p-click" placeholder="0"></div>
+        <div class="form-row"><label class="form-label">Like</label><input type="number" id="p-fb-like" placeholder="0"></div>
+        <div class="form-row"><label class="form-label">Commenti</label><input type="number" id="p-fb-comm" placeholder="0"></div>
+      </div>
+      <div class="form-grid" style="margin-bottom:14px;">
+        <div class="form-row"><label class="form-label">Engagement %</label><input type="number" id="p-eng" placeholder="0.0" step="0.1"></div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn-danger" onclick="closeModal('modal-post');editingId=null;">Annulla</button>
+        <button class="btn-primary" onclick="savePost()">Salva post</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="v-analytics" class="view">
+  <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+    <select id="an-cliente" style="width:auto;" onchange="renderAnalytics()"><option value="">Tutti i clienti</option></select>
+    <select id="an-canale" style="width:auto;" onchange="renderAnalytics()"><option value="">Entrambi i canali</option><option value="instagram">Solo Instagram</option><option value="facebook">Solo Facebook</option></select>
+  </div>
+  <div class="metric-grid" id="an-metrics"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div class="card"><div class="card-header"><span class="card-title">Engagement per tipo</span></div><div id="an-chart-tipo" class="chart-bar-wrap"></div></div>
+    <div class="card"><div class="card-header"><span class="card-title">Post per stato</span></div><div id="an-chart-stati" class="chart-bar-wrap"></div></div>
+  </div>
+</div>
+</div>
+
+<script>
+const STATI={
+  'Bozza':          {cls:'s-bozza',   icon:'ti-pencil',         bar:'#B4B2A9',cal:'#D3D1C7',txt:'#444441'},
+  'Da Programmare': {cls:'s-da-prog', icon:'ti-clock',          bar:'#EF9F27',cal:'#FAEEDA',txt:'#633806'},
+  'Programmato':    {cls:'s-prog',    icon:'ti-calendar-event', bar:'#BA7517',cal:'#EF9F27',txt:'#412402'},
+  'Pubblicato':     {cls:'s-pub',     icon:'ti-check',          bar:'#639922',cal:'#C0DD97',txt:'#27500A'},
+  'Sponsorizzato':  {cls:'s-spon',    icon:'ti-speakerphone',   bar:'#3B6D11',cal:'#9FE1CB',txt:'#085041'},
+  'Non Pubblicato': {cls:'s-no-pub',  icon:'ti-ban',            bar:'#E24B4A',cal:'#F7C1C1',txt:'#791F1F'}
+};
+const MESI=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const DOW=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+let calState={pan:{y:2025,m:4},full:{y:2025,m:4}};
+
+function statoBadge(s){const d=STATI[s]||STATI['Bozza'];return `<span class="pill ${d.cls}"><i class="ti ${d.icon}" aria-hidden="true"></i> ${s}</span>`;}
+function postIdBadge(postId){return `<span class="post-id-badge">${postId}</span>`;}
+
+let clienti=[
+  {id:1,nome:"Pizzeria Roma",sigla:"PZR",settore:"Ristorazione",referente:"Mario Rossi",email:"mario@pizzeriaroma.it",ig:{user:"@pizzeriaroma",follower:4200},fb:{pagina:"Pizzeria Roma",fan:8500}},
+  {id:2,nome:"Studio Legale Bianchi",sigla:"SLB",settore:"Legal",referente:"Anna Bianchi",email:"anna@studiolegale.it",ig:{user:"@studiolegale",follower:1800},fb:{pagina:"Studio Legale Bianchi",fan:3200}},
+  {id:3,nome:"Boutique Milani",sigla:"BTM",settore:"Moda",referente:"Luca Milani",email:"luca@boutiquemilani.it",ig:{user:"@boutiquemilani",follower:9400},fb:{pagina:"Boutique Milani",fan:5600}}
+];
+let posts=[
+  {id:1,postId:"PZR-001",numPost:1,cliente:"Pizzeria Roma",canale:"instagram",data:"2025-05-01",tipo:"reel",topic:"Impasto pizza napoletana",reach:6800,like:412,commenti:38,salvataggi:124,eng:5.1,stato:"Pubblicato",sponsorizzato:false,budget:0},
+  {id:2,postId:"PZR-002",numPost:2,cliente:"Pizzeria Roma",canale:"facebook",data:"2025-05-03",tipo:"foto",topic:"Promo menu serale",reach:3400,reachOrg:980,like:89,commenti:24,share:31,click:67,eng:4.2,stato:"Sponsorizzato",sponsorizzato:true,budget:25},
+  {id:3,postId:"BTM-001",numPost:1,cliente:"Boutique Milani",canale:"instagram",data:"2025-05-05",tipo:"carosello",topic:"Nuova collezione estate",reach:11200,like:890,commenti:72,salvataggi:340,eng:6.3,stato:"Pubblicato",sponsorizzato:false,budget:0},
+  {id:4,postId:"SLB-001",numPost:1,cliente:"Studio Legale Bianchi",canale:"facebook",data:"2025-05-06",tipo:"link",topic:"Guida al GDPR 2025",reach:2100,reachOrg:900,like:44,commenti:12,share:28,click:89,eng:3.1,stato:"Programmato",sponsorizzato:false,budget:0},
+  {id:5,postId:"BTM-002",numPost:2,cliente:"Boutique Milani",canale:"facebook",data:"2025-05-10",tipo:"video",topic:"Behind the scenes",reach:0,eng:0,stato:"Da Programmare",sponsorizzato:true,budget:50},
+  {id:6,postId:"SLB-002",numPost:2,cliente:"Studio Legale Bianchi",canale:"instagram",data:"2025-05-12",tipo:"foto",topic:"Team dello studio",reach:0,eng:0,stato:"Bozza",sponsorizzato:false,budget:0},
+  {id:7,postId:"PZR-003",numPost:3,cliente:"Pizzeria Roma",canale:"instagram",data:"2025-05-14",tipo:"story",topic:"Sondaggio ingredienti",reach:0,eng:0,stato:"Non Pubblicato",sponsorizzato:false,budget:0},
+  {id:8,postId:"BTM-003",numPost:3,cliente:"Boutique Milani",canale:"instagram",data:"2025-05-20",tipo:"reel",topic:"Styling tips estate",reach:0,eng:0,stato:"Programmato",sponsorizzato:true,budget:80},
+  {id:9,postId:"PZR-004",numPost:4,cliente:"Pizzeria Roma",canale:"facebook",data:"2025-05-22",tipo:"foto",topic:"Offerta weekend",reach:0,eng:0,stato:"Da Programmare",sponsorizzato:false,budget:0},
+  {id:10,postId:"SLB-003",numPost:3,cliente:"Studio Legale Bianchi",canale:"instagram",data:"2025-05-24",tipo:"carosello",topic:"5 diritti da conoscere",reach:0,eng:0,stato:"Bozza",sponsorizzato:false,budget:0}
+];
+let nextId=30,editingId=null,editingClienteId=null;
+
+function getSigla(n){const c=clienti.find(x=>x.nome===n);return c?c.sigla:n.slice(0,3);}
+function siglaBadge(n){return `<span class="sigla-badge" title="${n}">${getSigla(n)}</span>`;}
+function padNum(n){return String(n).padStart(3,'0');}
+
+function aggiornaPrefisso(){
+  const sel=document.getElementById('p-cliente');
+  const num=document.getElementById('p-num').value;
+  const sigla=getSigla(sel.value||'');
+  const pref=document.getElementById('p-prefisso');
+  const prev=document.getElementById('p-id-preview');
+  if(sigla&&num){
+    const full=`${sigla}-${padNum(parseInt(num)||1)}`;
+    pref.textContent=sigla+'-';
+    prev.textContent=`ID generato: ${full}`;
+  } else {
+    pref.textContent=sigla?sigla+'-':'';
+    prev.textContent='';
+  }
+}
+
+function toggleBudget(){
+  const spon=document.getElementById('p-spon').checked;
+  const row=document.getElementById('budget-row');
+  row.style.opacity=spon?'1':'0.4';
+  document.getElementById('p-budget').disabled=!spon;
+  if(!spon) document.getElementById('p-budget').value='';
+}
+
+function showView(v,btn){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('v-'+v).classList.add('active');btn.classList.add('active');
+  if(v==='panoramica')renderPanoramica();
+  if(v==='calendario'){populateAll();renderCal('full');}
+  if(v==='clienti')renderClienti();
+  if(v==='post')renderPost();
+  if(v==='analytics')renderAnalytics();
+}
+function openModal(id){document.getElementById(id).classList.add('open');populateAll();aggiornaPrefisso();toggleBudget();}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function toggleFbFields(){
+  const v=document.getElementById('p-canale').value;
+  document.getElementById('ig-fields').style.display=v==='instagram'?'grid':'none';
+  document.getElementById('fb-fields').style.display=v==='facebook'?'grid':'none';
+}
+function populateAll(){
+  const ids=['p-cliente','filter-cliente','an-cliente','pan-filter-cliente','full-filter-cliente'];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const cur=el.value;
+    const pfx=id==='p-cliente'?'':'<option value="">'+( id.includes('pan')||id.includes('full')?'Tutti':'Tutti i clienti')+'</option>';
+    el.innerHTML=pfx+clienti.map(c=>`<option value="${c.nome}">${c.sigla} — ${c.nome}</option>`).join('');
+    el.value=cur;
+  });
+}
+function calMove(dir,mode){
+  calState[mode].m+=dir;
+  if(calState[mode].m<0){calState[mode].m=11;calState[mode].y--;}
+  if(calState[mode].m>11){calState[mode].m=0;calState[mode].y++;}
+  renderCal(mode);
+}
+function calGoToday(mode){const t=new Date();calState[mode].y=t.getFullYear();calState[mode].m=t.getMonth();renderCal(mode);}
+function renderCal(mode){
+  populateAll();
+  const {y,m}=calState[mode];
+  const titleEl=document.getElementById('cal-title-'+mode);
+  if(titleEl)titleEl.textContent=`${MESI[m]} ${y}`;
+  const fcl=(document.getElementById((mode==='pan'?'pan':'full')+'-filter-cliente')||{}).value||'';
+  const fca=(document.getElementById((mode==='pan'?'pan':'full')+'-filter-canale')||{}).value||'';
+  const firstDay=new Date(y,m,1);
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const today=new Date();
+  let startDow=(firstDay.getDay()+6)%7;
+  const numRows=Math.ceil((startDow+daysInMonth)/7);
+  const postMap={};
+  posts.forEach(p=>{
+    if(!p.data)return;
+    const[py,pm,pd]=p.data.split('-').map(Number);
+    if(py===y&&pm-1===m){
+      if(fcl&&p.cliente!==fcl)return;
+      if(fca&&p.canale!==fca)return;
+      if(!postMap[pd])postMap[pd]=[];
+      postMap[pd].push(p);
+    }
+  });
+  const maxEvt=mode==='pan'?3:4;
+  let html=`<thead><tr class="cal-dow-row">`;
+  DOW.forEach((d,i)=>{html+=`<th class="${i>=5?'we':''}">${d}</th>`;});
+  html+=`</tr></thead><tbody>`;
+  for(let row=0;row<numRows;row++){
+    html+='<tr>';
+    for(let col=0;col<7;col++){
+      const idx=row*7+col;const day=idx-startDow+1;
+      const isCur=day>=1&&day<=daysInMonth;
+      const isToday=isCur&&day===today.getDate()&&m===today.getMonth()&&y===today.getFullYear();
+      const isWE=col>=5;
+      let cls='cal-cell';
+      if(!isCur)cls+=' other';else if(isToday)cls+=' today';else if(isWE)cls+=' we';
+      let inner='';
+      if(isCur){
+        inner+=`<div class="cal-day-num">${day}</div>`;
+        const dp=postMap[day]||[];
+        dp.slice(0,maxEvt).forEach(p=>{
+          const s=STATI[p.stato]||STATI['Bozza'];
+          const sponMark=p.sponsorizzato?'★ ':'';
+          inner+=`<div class="cal-evt" style="background:${s.cal};color:${s.txt};" title="${p.postId} · ${getSigla(p.cliente)} · ${p.canale==='instagram'?'IG':'FB'} · ${p.topic}${p.sponsorizzato?' · Ads €'+p.budget:''}">${sponMark}${p.postId} · ${p.topic.slice(0,8)}</div>`;
+        });
+        if(dp.length>maxEvt)inner+=`<div class="cal-more">+${dp.length-maxEvt} altri</div>`;
+      } else {
+        const ghost=day<1?new Date(y,m,day).getDate():(day-daysInMonth);
+        inner+=`<div class="cal-day-num">${ghost}</div>`;
+      }
+      html+=`<td class="${cls}">${inner}</td>`;
+    }
+    html+='</tr>';
+  }
+  html+='</tbody>';
+  document.getElementById('cal-table-'+mode).innerHTML=html;
+  const legEl=document.getElementById('cal-legend-'+mode);
+  if(legEl)legEl.innerHTML='<span style="font-size:10px;color:var(--color-text-tertiary);margin-right:4px;align-self:center;">Stato:</span>'+
+    Object.entries(STATI).map(([s,v])=>`<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;"><span style="width:9px;height:9px;border-radius:2px;background:${v.cal};display:inline-block;"></span><span style="color:var(--color-text-secondary);">${s}</span></span>`).join('');
+}
+function renderPanoramica(){
+  populateAll();
+  const ig=posts.filter(p=>p.canale==='instagram').length;
+  const fb=posts.filter(p=>p.canale==='facebook').length;
+  const tr=posts.reduce((s,p)=>s+(p.reach||0),0);
+  const pub=posts.filter(p=>p.eng>0);
+  const ae=pub.length?(pub.reduce((s,p)=>s+p.eng,0)/pub.length).toFixed(1):0;
+  const budTot=posts.filter(p=>p.sponsorizzato).reduce((s,p)=>s+(p.budget||0),0);
+  document.getElementById('dash-metrics').innerHTML=`
+    <div class="metric-box"><div class="metric-label">Clienti</div><div class="metric-val">${clienti.length}</div></div>
+    <div class="metric-box"><div class="metric-label">Post totali</div><div class="metric-val">${posts.length}</div><div class="metric-sub">IG ${ig} · FB ${fb}</div></div>
+    <div class="metric-box"><div class="metric-label">Reach totale</div><div class="metric-val">${(tr/1000).toFixed(1)}k</div></div>
+    <div class="metric-box"><div class="metric-label">Eng. medio</div><div class="metric-val">${ae}%</div></div>
+    <div class="metric-box"><div class="metric-label">Budget ads</div><div class="metric-val">€${budTot.toFixed(0)}</div></div>`;
+  const sc={};posts.forEach(p=>{sc[p.stato]=(sc[p.stato]||0)+1;});
+  document.getElementById('dash-stati').innerHTML=Object.entries(STATI).map(([s])=>`
+    <span class="pill ${STATI[s].cls}"><i class="ti ${STATI[s].icon}" aria-hidden="true"></i> ${s} <strong style="margin-left:3px;">${sc[s]||0}</strong></span>`).join('');
+  const igT=[...posts].filter(p=>p.canale==='instagram'&&p.eng>0).sort((a,b)=>b.eng-a.eng).slice(0,4);
+  const mE=Math.max(...igT.map(p=>p.eng),1);
+  document.getElementById('dash-ig-top').innerHTML=igT.length?igT.map(p=>`
+    <div class="chart-bar-row"><div class="chart-bar-label">${p.postId}: ${p.topic.slice(0,10)}</div>
+    <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.round(p.eng/mE*100)}%;background:#7F77DD;"></div></div>
+    <div class="chart-bar-val">${p.eng}%</div></div>`).join(''):'<div style="text-align:center;padding:.8rem;color:var(--color-text-secondary);font-size:12px;">Nessun dato</div>';
+  const fbT=[...posts].filter(p=>p.canale==='facebook'&&p.reach>0).sort((a,b)=>b.reach-a.reach).slice(0,4);
+  const mR=Math.max(...fbT.map(p=>p.reach),1);
+  document.getElementById('dash-fb-top').innerHTML=fbT.length?fbT.map(p=>`
+    <div class="chart-bar-row"><div class="chart-bar-label">${p.postId}: ${p.topic.slice(0,10)}</div>
+    <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.round(p.reach/mR*100)}%;background:#378ADD;"></div></div>
+    <div class="chart-bar-val">${(p.reach/1000).toFixed(1)}k</div></div>`).join(''):'<div style="text-align:center;padding:.8rem;color:var(--color-text-secondary);font-size:12px;">Nessun dato</div>';
+  renderCal('pan');
+  const rec=[...posts].sort((a,b)=>b.data>a.data?1:-1).slice(0,6);
+  document.getElementById('dash-recent').innerHTML=rec.map(p=>`<tr>
+    <td>${postIdBadge(p.postId)}</td>
+    <td>${siglaBadge(p.cliente)}</td>
+    <td><span class="pill ${p.canale==='instagram'?'ch-ig':'ch-fb'}">${p.canale==='instagram'?'IG':'FB'}</span></td>
+    <td>${p.topic.slice(0,22)}</td>
+    <td>${p.reach>0?p.reach.toLocaleString('it-IT'):'—'}</td>
+    <td>${p.eng>0?p.eng+'%':'—'}</td>
+    <td><span class="spon-dot ${p.sponsorizzato?'':'off'}" title="${p.sponsorizzato?'Sponsorizzato':'Organico'}"></span></td>
+    <td>${statoBadge(p.stato)}</td></tr>`).join('');
+}
+function renderClienti(){
+  const list=document.getElementById('clienti-list');
+  if(!clienti.length){list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--color-text-secondary);">Nessun cliente.</div>';return;}
+  list.innerHTML=clienti.map(c=>{
+    const cp=posts.filter(p=>p.cliente===c.nome);
+    const pub=cp.filter(p=>p.eng>0);
+    const avg=pub.length?(pub.reduce((s,p)=>s+p.eng,0)/pub.length).toFixed(1):'—';
+    const budg=cp.filter(p=>p.sponsorizzato).reduce((s,p)=>s+(p.budget||0),0);
+    return `<div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:${avatarBg(c.nome)};color:${avatarCol(c.nome)}">${initials(c.nome)}</div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:7px;"><span style="font-weight:500;font-size:14px;color:var(--color-text-primary);">${c.nome}</span><span class="sigla-badge">${c.sigla}</span></div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:1px;">${c.settore} · ${c.referente}</div></div>
+        <button class="btn-sm" onclick="editCliente(${c.id})" aria-label="Modifica"><i class="ti ti-edit" aria-hidden="true"></i></button>
+        <button class="btn-danger" onclick="deleteCliente(${c.id})"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:8px;">
+        <div class="metric-box"><div class="metric-label">IG Follower</div><div class="metric-val" style="font-size:15px;">${c.ig.follower.toLocaleString('it-IT')}</div></div>
+        <div class="metric-box"><div class="metric-label">FB Fan</div><div class="metric-val" style="font-size:15px;">${c.fb.fan.toLocaleString('it-IT')}</div></div>
+        <div class="metric-box"><div class="metric-label">Post</div><div class="metric-val" style="font-size:15px;">${cp.length}</div></div>
+        <div class="metric-box"><div class="metric-label">Eng. medio</div><div class="metric-val" style="font-size:15px;">${avg}${avg!=='—'?'%':''}</div></div>
+        <div class="metric-box"><div class="metric-label">Budget ads</div><div class="metric-val" style="font-size:15px;">€${budg.toFixed(0)}</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--color-text-tertiary);">${c.email}</div>
+    </div>`;
+  }).join('');
+}
+function avatarBg(n){return['#EEEDFE','#E1F5EE','#E6F1FB','#FAEEDA','#FAECE7'][n.charCodeAt(0)%5];}
+function avatarCol(n){return['#3C3489','#085041','#0C447C','#633806','#712B13'][n.charCodeAt(0)%5];}
+function initials(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+function autoSigla(){
+  if(editingClienteId)return;
+  const words=document.getElementById('c-nome').value.trim().split(/\s+/).filter(Boolean);
+  document.getElementById('c-sigla').value=words.length===1?words[0].slice(0,3).toUpperCase():words.map(w=>w[0]).join('').slice(0,6).toUpperCase();
+  validateSigla(document.getElementById('c-sigla'));
+}
+function validateSigla(el){
+  el.value=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const dup=clienti.some(c=>c.sigla===el.value&&c.id!==editingClienteId);
+  document.getElementById('sigla-error').style.display=dup?'block':'none';
+  return !dup&&el.value.length>=2;
+}
+function editCliente(id){
+  const c=clienti.find(x=>x.id===id);if(!c)return;editingClienteId=id;
+  document.getElementById('modal-cliente-title').textContent='Modifica cliente';
+  document.getElementById('c-nome').value=c.nome;document.getElementById('c-sigla').value=c.sigla;
+  document.getElementById('c-settore').value=c.settore;document.getElementById('c-referente').value=c.referente;
+  document.getElementById('c-email').value=c.email;document.getElementById('c-ig-user').value=c.ig.user;
+  document.getElementById('c-ig-fol').value=c.ig.follower;document.getElementById('c-fb-pag').value=c.fb.pagina;
+  document.getElementById('c-fb-fan').value=c.fb.fan;document.getElementById('sigla-error').style.display='none';
+  openModal('modal-cliente');
+}
+function deleteCliente(id){clienti=clienti.filter(c=>c.id!==id);renderClienti();populateAll();}
+function saveCliente(){
+  const nome=document.getElementById('c-nome').value.trim();if(!nome)return;
+  const siglaEl=document.getElementById('c-sigla');if(!validateSigla(siglaEl))return;
+  const obj={id:editingClienteId||nextId++,nome,sigla:siglaEl.value,settore:document.getElementById('c-settore').value||'—',referente:document.getElementById('c-referente').value||'—',email:document.getElementById('c-email').value||'—',ig:{user:document.getElementById('c-ig-user').value||'',follower:parseInt(document.getElementById('c-ig-fol').value)||0},fb:{pagina:document.getElementById('c-fb-pag').value||'',fan:parseInt(document.getElementById('c-fb-fan').value)||0}};
+  if(editingClienteId){clienti=clienti.map(c=>c.id===editingClienteId?obj:c);}else{clienti.push(obj);}
+  editingClienteId=null;document.getElementById('modal-cliente-title').textContent='Nuovo cliente';
+  closeModal('modal-cliente');['c-nome','c-sigla','c-settore','c-referente','c-email','c-ig-user','c-ig-fol','c-fb-pag','c-fb-fan'].forEach(id=>document.getElementById(id).value='');
+  renderClienti();populateAll();
+}
+function renderPost(){
+  populateAll();
+  const fc=document.getElementById('filter-canale').value;
+  const fcl=document.getElementById('filter-cliente').value;
+  const fs=document.getElementById('filter-stato').value;
+  const fspon=document.getElementById('filter-spon').value;
+  let f=posts;
+  if(fc)f=f.filter(p=>p.canale===fc);
+  if(fcl)f=f.filter(p=>p.cliente===fcl);
+  if(fs)f=f.filter(p=>p.stato===fs);
+  if(fspon==='1')f=f.filter(p=>p.sponsorizzato);
+  if(fspon==='0')f=f.filter(p=>!p.sponsorizzato);
+  f=[...f].sort((a,b)=>b.data>a.data?1:-1);
+  const tbody=document.getElementById('post-table');
+  if(!f.length){tbody.innerHTML='<tr><td colspan="12" style="text-align:center;color:var(--color-text-secondary);padding:2rem;">Nessun post trovato</td></tr>';return;}
+  tbody.innerHTML=f.map(p=>`<tr>
+    <td>${postIdBadge(p.postId)}</td>
+    <td>${siglaBadge(p.cliente)}</td>
+    <td><span class="pill ${p.canale==='instagram'?'ch-ig':'ch-fb'}">${p.canale==='instagram'?'IG':'FB'}</span></td>
+    <td>${p.data}</td>
+    <td>${p.tipo}</td>
+    <td>${p.topic.slice(0,20)}</td>
+    <td>${p.reach>0?p.reach.toLocaleString('it-IT'):'—'}</td>
+    <td>${p.eng>0?p.eng+'%':'—'}</td>
+    <td style="text-align:center;"><span class="spon-dot ${p.sponsorizzato?'':'off'}" title="${p.sponsorizzato?'Sponsorizzato':'Organico'}"></span></td>
+    <td>${p.sponsorizzato&&p.budget>0?`<span class="budget-val">€${p.budget.toFixed(2)}</span>`:'—'}</td>
+    <td>${statoBadge(p.stato)}</td>
+    <td style="display:flex;gap:3px;padding:5px 8px;">
+      <button class="btn-sm" onclick="editPost(${p.id})" aria-label="Modifica"><i class="ti ti-edit" aria-hidden="true"></i></button>
+      <button class="btn-sm" style="color:#A32D2D;" onclick="deletePost(${p.id})" aria-label="Elimina"><i class="ti ti-trash" aria-hidden="true"></i></button>
+    </td></tr>`).join('');
+}
+function editPost(id){
+  const p=posts.find(x=>x.id===id);if(!p)return;editingId=id;
+  document.getElementById('modal-post-title').textContent='Modifica post';populateAll();
+  document.getElementById('p-cliente').value=p.cliente;aggiornaPrefisso();
+  document.getElementById('p-num').value=p.numPost;aggiornaPrefisso();
+  document.getElementById('p-canale').value=p.canale;toggleFbFields();
+  document.getElementById('p-data').value=p.data;document.getElementById('p-tipo').value=p.tipo;
+  document.getElementById('p-topic').value=p.topic;document.getElementById('p-stato').value=p.stato;
+  document.getElementById('p-eng').value=p.eng||'';
+  document.getElementById('p-spon').checked=p.sponsorizzato||false;
+  document.getElementById('p-budget').value=p.budget||'';
+  toggleBudget();
+  if(p.canale==='instagram'){document.getElementById('p-reach').value=p.reach||'';document.getElementById('p-like').value=p.like||'';document.getElementById('p-comm').value=p.commenti||'';document.getElementById('p-salv').value=p.salvataggi||'';}
+  else{document.getElementById('p-reach-org').value=p.reachOrg||'';document.getElementById('p-reach-tot').value=p.reach||'';document.getElementById('p-share').value=p.share||'';document.getElementById('p-click').value=p.click||'';document.getElementById('p-fb-like').value=p.like||'';document.getElementById('p-fb-comm').value=p.commenti||'';}
+  openModal('modal-post');
+}
+function savePost(){
+  const cliente=document.getElementById('p-cliente').value;
+  const canale=document.getElementById('p-canale').value;
+  if(!cliente)return;
+  const numPost=parseInt(document.getElementById('p-num').value)||1;
+  const sigla=getSigla(cliente);
+  const postId=`${sigla}-${padNum(numPost)}`;
+  const spon=document.getElementById('p-spon').checked;
+  const p={
+    id:editingId||nextId++,postId,numPost,cliente,canale,
+    data:document.getElementById('p-data').value||new Date().toISOString().slice(0,10),
+    tipo:document.getElementById('p-tipo').value,
+    topic:document.getElementById('p-topic').value||'—',
+    stato:document.getElementById('p-stato').value||'Bozza',
+    eng:parseFloat(document.getElementById('p-eng').value)||0,
+    sponsorizzato:spon,
+    budget:spon?(parseFloat(document.getElementById('p-budget').value)||0):0
+  };
+  if(canale==='instagram'){p.reach=parseInt(document.getElementById('p-reach').value)||0;p.like=parseInt(document.getElementById('p-like').value)||0;p.commenti=parseInt(document.getElementById('p-comm').value)||0;p.salvataggi=parseInt(document.getElementById('p-salv').value)||0;}
+  else{p.reach=parseInt(document.getElementById('p-reach-tot').value)||0;p.reachOrg=parseInt(document.getElementById('p-reach-org').value)||0;p.like=parseInt(document.getElementById('p-fb-like').value)||0;p.commenti=parseInt(document.getElementById('p-fb-comm').value)||0;p.share=parseInt(document.getElementById('p-share').value)||0;p.click=parseInt(document.getElementById('p-click').value)||0;}
+  if(editingId){posts=posts.map(x=>x.id===editingId?p:x);}else{posts.push(p);}
+  editingId=null;document.getElementById('modal-post-title').textContent='Nuovo post';closeModal('modal-post');
+  ['p-topic','p-data','p-reach','p-like','p-comm','p-salv','p-reach-org','p-reach-tot','p-share','p-click','p-fb-like','p-fb-comm','p-eng','p-num','p-budget'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('p-spon').checked=false;toggleBudget();
+  renderPost();
+}
+function deletePost(id){posts=posts.filter(p=>p.id!==id);renderPost();}
+function renderAnalytics(){
+  populateAll();
+  const fcl=document.getElementById('an-cliente').value,fca=document.getElementById('an-canale').value;
+  let f=posts;if(fcl)f=f.filter(p=>p.cliente===fcl);if(fca)f=f.filter(p=>p.canale===fca);
+  const tr=f.reduce((s,p)=>s+(p.reach||0),0);
+  const pub=f.filter(p=>p.eng>0);const ae=pub.length?(pub.reduce((s,p)=>s+p.eng,0)/pub.length).toFixed(1):0;
+  const best=pub.length?[...pub].sort((a,b)=>b.eng-a.eng)[0]:null;
+  const budTot=f.filter(p=>p.sponsorizzato).reduce((s,p)=>s+(p.budget||0),0);
+  document.getElementById('an-metrics').innerHTML=`
+    <div class="metric-box"><div class="metric-label">Post analizzati</div><div class="metric-val">${f.length}</div></div>
+    <div class="metric-box"><div class="metric-label">Reach totale</div><div class="metric-val">${(tr/1000).toFixed(1)}k</div></div>
+    <div class="metric-box"><div class="metric-label">Eng. medio</div><div class="metric-val">${ae}%</div></div>
+    <div class="metric-box"><div class="metric-label">Top tipo</div><div class="metric-val" style="font-size:15px;">${best?best.tipo:'—'}</div></div>
+    <div class="metric-box"><div class="metric-label">Budget ads</div><div class="metric-val">€${budTot.toFixed(0)}</div></div>`;
+  const tipi={};pub.forEach(p=>{if(!tipi[p.tipo])tipi[p.tipo]={sum:0,count:0};tipi[p.tipo].sum+=p.eng;tipi[p.tipo].count++;});
+  const tArr=Object.entries(tipi).map(([k,v])=>({tipo:k,avg:v.sum/v.count})).sort((a,b)=>b.avg-a.avg);
+  const mT=Math.max(...tArr.map(t=>t.avg),1);
+  document.getElementById('an-chart-tipo').innerHTML=tArr.length?tArr.map(t=>`
+    <div class="chart-bar-row"><div class="chart-bar-label">${t.tipo}</div>
+    <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.round(t.avg/mT*100)}%;background:#7F77DD;"></div></div>
+    <div class="chart-bar-val">${t.avg.toFixed(1)}%</div></div>`).join(''):'<div style="text-align:center;padding:.8rem;color:var(--color-text-secondary);font-size:12px;">Nessun dato</div>';
+  const sC={};f.forEach(p=>{sC[p.stato]=(sC[p.stato]||0)+1;});
+  const sArr=Object.entries(STATI).map(([s,v])=>({stato:s,count:sC[s]||0,color:v.bar})).filter(x=>x.count>0);
+  const mS=Math.max(...sArr.map(x=>x.count),1);
+  document.getElementById('an-chart-stati').innerHTML=sArr.length?sArr.map(x=>`
+    <div class="chart-bar-row"><div class="chart-bar-label" style="width:100px;">${x.stato}</div>
+    <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.round(x.count/mS*100)}%;background:${x.color};"></div></div>
+    <div class="chart-bar-val">${x.count}</div></div>`).join(''):'<div style="text-align:center;padding:.8rem;color:var(--color-text-secondary);font-size:12px;">Nessun dato</div>';
+}
+populateAll();
+renderPanoramica();
+</script>
